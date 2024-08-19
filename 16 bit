@@ -1,0 +1,78 @@
+org 100h
+
+    num1    dw  2513h      ; First 16-bit number
+    num2    dw  2754h      ; Second 16-bit number
+
+start:
+    ; Load the lower byte of num1 into AX
+    mov     ax, [num1]
+    
+    ; Add the lower byte of num2 to AX
+    add     ax, [num2]
+    
+    ; Store the result in BX for later use
+    mov     bx, ax
+    
+    ; Convert the high byte of the result to ASCII
+    mov     ah, al         ; Copy the result to AH
+    and     ah, 0F0h       ; Mask out the low nibble, keep only the high nibble
+    shr     ah, 4          ; Shift right by 4 to get the high nibble in the lower half
+    add     ah, 30h        ; Convert to ASCII (0-9)
+    cmp     ah, 39h        ; Compare with '9'
+    jle     print_high     ; If <= '9', jump to print_high
+    add     ah, 7          ; If > '9', convert to ASCII A-F by adding 7
+
+print_high:
+    mov     dl, ah         ; Move the high nibble ASCII character to DL
+    mov     ah, 02h        ; DOS function to display a character
+    int     21h            ; Call DOS interrupt to print the character
+    
+    ; Convert the low nibble of the result to ASCII
+    mov     ah, bl         ; Copy the result back from BX to AH
+    and     ah, 0Fh        ; Mask out the high nibble, keep only the low nibble
+    add     ah, 30h        ; Convert to ASCII (0-9)
+    cmp     ah, 39h        ; Compare with '9'
+    jle     print_low      ; If <= '9', jump to print_low
+    add     ah, 7          ; If > '9', convert to ASCII A-F by adding 7
+
+print_low:
+    mov     dl, ah         ; Move the low nibble ASCII character to DL
+    mov     ah, 02h        ; DOS function to display a character
+    int     21h            ; Call DOS interrupt to print the character
+    
+    ; Repeat the above process for the higher byte of the 16-bit result
+    
+    ; Convert the high byte to ASCII
+    mov     ah, bh         ; Copy the high byte of the result into AH
+    and     ah, 0F0h       ; Mask out the low nibble
+    shr     ah, 4          ; Shift right to move the high nibble to lower 4 bits
+    add     ah, 30h        ; Convert to ASCII (0-9)
+    cmp     ah, 39h        ; Compare with '9'
+    jle     print_high2    ; If <= '9', jump to print_high2
+    add     ah, 7          ; If > '9', convert to ASCII A-F by adding 7
+
+print_high2:
+    mov     dl, ah         ; Move the high nibble ASCII character to DL
+    mov     ah, 02h        ; DOS function to display a character
+    int     21h            ; Call DOS interrupt to print the character
+    
+    ; Convert the low nibble of the high byte to ASCII
+    mov     ah, bh         ; Copy the high byte again into AH
+    and     ah, 0Fh        ; Mask out the high nibble
+    add     ah, 30h        ; Convert to ASCII (0-9)
+    cmp     ah, 39h        ; Compare with '9'
+    jle     print_low2     ; If <= '9', jump to print_low2
+    add     ah, 7          ; If > '9', convert to ASCII A-F by adding 7
+
+print_low2:
+    mov     dl, ah         ; Move the low nibble ASCII character to DL
+    mov     ah, 02h        ; DOS function to display a character
+    int     21h            ; Call DOS interrupt to print the character
+    
+    ; Wait for a key press
+    mov     ah, 0          ; Function 0 of INT 16h waits for a keypress
+    int     16h            ; Wait for a keypress
+    
+    ; Exit the program
+    mov     ax, 4C00h      ; DOS function to terminate the program
+    int     21h            ; Call DOS interrupt to terminate the program
