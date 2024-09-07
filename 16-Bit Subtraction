@@ -1,0 +1,50 @@
+org 100h
+
+num1 dw 1234h  ; 16-bit first operand
+num2 dw 1200h  ; 16-bit second operand
+
+start:
+    mov ax, num1  ; Load first operand into AX (AX = 1234h)
+    sub ax, num2  ; Subtract second operand from AX (AX = 1234h - 0ABCh)
+
+; AX now holds the result of the subtraction
+
+; Store the result in a register for further processing
+mov bx, ax
+
+; Convert and print the result as a hexadecimal value
+
+; Print the high nibble (first digit)
+mov ah, al
+and ah, 0F0h
+shr ah, 4
+add ah, 30h
+cmp ah, 39h
+jle print_high_nibble
+
+add ah, 7  
+
+print_high_nibble:
+    mov dl, ah
+    mov ah, 02h
+    int 21h
+
+; Print the low nibble (second digit)
+mov ah, bl
+and ah, 0Fh
+add ah, 30h
+cmp ah, 39h
+jle print_low_nibble
+
+add ah, 7
+
+print_low_nibble:
+    mov dl, ah
+    mov ah, 02h
+    int 21h
+
+; Return control to DOS
+mov ah, 4Ch
+int 21h
+
+end start
