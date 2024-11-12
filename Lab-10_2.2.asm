@@ -1,15 +1,15 @@
-ORG 100h           ; Set origin for COM file format
+ORG 100h           
 
-MOV CX, 26         ; Set loop counter to 26 (for letters 'Z' to 'A')
-MOV AL, 'A'        ; Initialize AL with ASCII code for 'Z'
+MOV CX, 26        
+MOV AL, 'A'       
 
 PrintLoop:
-    MOV DL, AL     ; Move the current character to DL (for printing)
-    MOV AH, 02h    ; DOS interrupt function to print a character
-    INT 21h        ; Call DOS interrupt
+    MOV DL, AL     
+    MOV AH, 02h    
+    INT 21h        
 
-    inc AL         ; Decrement AL to get the previous ASCII character ('Y', 'X', etc.)
-    LOOP PrintLoop ; Repeat until CX reaches 0
+    inc AL         
+    LOOP PrintLoop 
 
-MOV AH, 4Ch        ; DOS interrupt function to exit program
-INT 21h            ; Call DOS interrupt to exit
+MOV AH, 4Ch      
+INT 21h            
